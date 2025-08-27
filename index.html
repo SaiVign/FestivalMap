@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Festival Map</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;900&family=Montserrat+Alternates:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <section class="left">
+      <div class="map-frame" id="map-frame"><div id="map"></div>
+        <button id="to-list-btn" class="to-list" aria-label="К списку">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M10 17l5-5-5-5v10z"></path></svg>
+          <span>К списку</span>
+        </button>
+      </div>
+    </section>
+    <aside class="right">
+      <header class="title">
+        <div class="kicker gradient-text">КАРТА ФЕСТИВАЛЯ</div>
+        <h1 class="mega gradient-text"><span>FESTIVAL</span><br><span>MAP</span></h1>
+      </header>
+      <section class="locations" id="legend-section">
+        <h2>ЛОКАЦИИ</h2>
+        <ol id="poi-grid" class="poi-grid"></ol>
+      </section>
+    </aside>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
