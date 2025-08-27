@@ -13,7 +13,6 @@ map.fitBounds(bounds);
 
 // Ограничиваем панораму по границам изображения (жесткие границы)
 map.setMaxBounds(bounds);
-map.options.maxBounds = bounds;
 map.options.maxBoundsViscosity = 1.0;
 
 L.control.zoom({position:'topleft'}).addTo(map);
@@ -95,12 +94,19 @@ function select(id, skipListScroll = false){
   setActiveMarker(id,true);
   const p=places.find(x=>x.id===id);
   if(p){
-  // ensure map knows its size (important after scrolling into view on mobile)
-  try{ map.invalidateSize(); }catch(e){}
-  // pan to the POI so the marker is centered on the visible map
-  map.panTo(p.coords, {animate:true});
-  const m=markers.get(id);
-  if(m){ m.openPopup(); bounceMarker(m); }
+    // ensure map knows its size (important after scrolling into view on mobile)
+    try{ map.invalidateSize(); }catch(e){}
+    // use the marker's actual latlng to avoid coord-order issues and ensure exact centering
+    const m = markers.get(id);
+    if(m){
+      const latlng = m.getLatLng();
+      map.setView(latlng, map.getZoom(), {animate:true});
+      m.openPopup();
+      bounceMarker(m);
+    } else {
+      // fallback: try to center using raw coords
+      map.setView(p.coords, map.getZoom(), {animate:true});
+    }
   }
   // show 'to list' button on mobile when a POI is selected
   if(window.innerWidth <= 768){ showToListBtn(true); }
