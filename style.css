@@ -67,3 +67,18 @@ body{background:#fff;font:16px/1.45 'Montserrat',system-ui,-apple-system,Segoe U
 @media (max-width:768px){
   .to-list{display:inline-flex}
 }
+
+/* Info panel under the map */
+.info-panel{
+  margin-top:12px;
+  background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px; box-shadow:0 6px 18px rgba(0,0,0,.08);
+  min-height:56px; display:none; align-items:center; gap:12px; transition:transform .22s ease,opacity .22s ease;
+}
+.info-panel.show{display:flex; opacity:1; transform:translateY(0)}
+.info-panel.hidden{opacity:0; transform:translateY(6px); display:flex}
+.info-panel .title{font-weight:700;color:var(--name);font-size:18px}
+.info-panel .meta{color:var(--muted);font-size:15px}
+
+@media (max-width:768px){
+  .info-panel{padding:12px 10px;border-radius:10px}
+}

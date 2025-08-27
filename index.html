@@ -12,12 +12,14 @@
 <body>
   <div class="wrap">
     <section class="left">
-      <div class="map-frame" id="map-frame"><div id="map"></div>
+      <div class="map-frame" id="map-frame">
+        <div id="map"></div>
         <button id="to-list-btn" class="to-list" aria-label="К списку">
           <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M10 17l5-5-5-5v10z"></path></svg>
           <span>К списку</span>
         </button>
       </div>
+      <div id="info-panel" class="info-panel" aria-live="polite" aria-hidden="true"></div>
     </section>
     <aside class="right">
       <header class="title">

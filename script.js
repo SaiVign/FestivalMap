@@ -47,7 +47,7 @@ function makeMarker(p, active=false){
       iconAnchor: [14,28],
       popupAnchor: [0,-30]
     })
-  }).bindPopup(`<b>${p.id}. ${p.name}</b>${p.sub?'<br>'+p.sub:''}${p.meta?'<br>'+p.meta:''}`);
+  });
 }
 places.forEach(p => {
   const m = makeMarker(p);
@@ -100,8 +100,29 @@ function select(id, skipListScroll = false){
     const m = markers.get(id);
     if(m){
       const latlng = m.getLatLng();
-      map.setView(latlng, map.getZoom(), {animate:true});
-      m.openPopup();
+      // ensure map layout is up-to-date
+      try{ map.invalidateSize(); }catch(e){}
+      // safe padding in pixels (so popups/labels don't go outside visible area)
+      const pad = {x: 80, y: 80};
+      const mapSize = map.getSize();
+      const centerPoint = mapSize.multiplyBy(0.5);
+      const markerPoint = map.latLngToContainerPoint(latlng);
+      const minX = pad.x, maxX = mapSize.x - pad.x;
+      const minY = pad.y, maxY = mapSize.y - pad.y;
+      const clampedX = Math.min(maxX, Math.max(minX, markerPoint.x));
+      const clampedY = Math.min(maxY, Math.max(minY, markerPoint.y));
+      const offset = L.point(clampedX - markerPoint.x, clampedY - markerPoint.y);
+      if(offset.x === 0 && offset.y === 0){
+        // already within safe zone
+        map.setView(latlng, map.getZoom(), {animate:true});
+      } else {
+        // move center so marker appears inside safe zone
+        const newCenterPoint = centerPoint.subtract(offset);
+        const newCenterLatLng = map.containerPointToLatLng(newCenterPoint);
+        map.setView(newCenterLatLng, map.getZoom(), {animate:true});
+      }
+      // populate info panel instead of leaflet popup
+      showInfoPanel(p);
       bounceMarker(m);
     } else {
       // fallback: try to center using raw coords
@@ -150,4 +171,37 @@ if(toListBtn){
     }
   });
 }
+
+// Info panel controls
+const infoPanel = document.getElementById('info-panel');
+function showInfoPanel(p){
+  if(!infoPanel) return;
+  infoPanel.innerHTML = `
+    <div style="flex:1">
+      <div class="title">${p.id}. ${p.name}</div>
+      ${p.sub?`<div class="meta">${p.sub}</div>`:''}
+      ${p.meta?`<div class="meta">${p.meta}</div>`:''}
+    </div>
+    <button id="info-close" aria-label="Закрыть" style="background:none;border:0;color:var(--muted);font-weight:700;cursor:pointer">✕</button>
+  `;
+  infoPanel.classList.remove('hidden');
+  infoPanel.classList.add('show');
+  infoPanel.setAttribute('aria-hidden','false');
+  const closeBtn = document.getElementById('info-close');
+  if(closeBtn) closeBtn.addEventListener('click', hideInfoPanel);
+}
+function hideInfoPanel(){
+  if(!infoPanel) return;
+  infoPanel.classList.remove('show');
+  infoPanel.classList.add('hidden');
+  infoPanel.setAttribute('aria-hidden','true');
+}
+
+// clicking outside the map or info panel should hide panel
+document.addEventListener('click', (e) => {
+  const mapFrame = document.getElementById('map-frame');
+  if(!infoPanel) return;
+  if(infoPanel.contains(e.target) || mapFrame.contains(e.target)) return;
+  hideInfoPanel();
+});
 
